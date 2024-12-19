@@ -90,12 +90,13 @@
         function toggleSelectedFrameWorks(){
           const selectedLanguages = $(this).val();
           $('.list').children('li').each(function(){
-            if(selectedLanguages === 'all') {
-              $(this).show();
-            }else if(selectedLanguages === $(this).data('category-type')){
-              $(this).show();
+            const $this = $(this);
+            const isAll = selectedLanguages === 'all';
+            const isMatch = selectedLanguages === $this.data('category-type')
+            if(isAll || isMatch) {
+              $this.show();
             }else{
-              $(this).hide();
+              $this.hide();
             }
           });
         }
