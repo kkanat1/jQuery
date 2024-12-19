@@ -15,7 +15,58 @@
   </div>
   <script src="../../common/js/jquery.js"></script>
   <script>
-    // 回答はここに書いてね
+    $(function(){
+       // 「捕まえる」失敗時の画面表示
+      
+      let pokemonName = 'test pokemon name';
+      $('#pokemon_search').click(function(){
+        $('#wrapper').html(encountHtml);
+      });
+
+      $.ajax({
+        // url: 'https://pokeapi.co/api/v2/pokemon/1', //can get image 
+        url: 'https://pokeapi.co/api/v2/pokemon-species/1', //can get name 
+        method: 'GET'
+      }).done(function(res) {
+        console.log(res);
+        console.log(res.names[0].name);
+        // console.log(res.species.url);//ポケモンの詳細
+        // console.log(res.sprites.front_default); // 取得のポケモンのイメージ取得
+      }).fail(function(err) {
+      });
+
+      let failHtml =
+      `
+        <p class="text">逃げられてしまった...</p>
+        <button class="btn mt" data-js="reset">戻る</button>
+      `
+
+      // 「ポケモンを探す」後の画面表示
+      let encountHtml =
+      `
+        <p class="name">${pokemonName}</p>
+        <div>
+          <img class="img" src="" alt="">
+        </div>
+        <div>
+          <button class="btn" id="catch">捕まえる</button>
+          <button class="btn" data-js="reset">逃げる</button>
+        </div>
+      `
+
+      // 「捕まえる」成功時の画面表示
+      let doneHtml =
+      `
+        <p class="name">ゲットしました</p>
+        <div>
+          <img class="img" src="" alt="">
+        </div>
+        <button class="btn" data-js="reset">戻る</button>
+      `
+
+    });
+    
+    
   </script>
 </body>
 </html>
