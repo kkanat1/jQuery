@@ -16,12 +16,16 @@
   <script src="../../common/js/jquery.js"></script>
   <script>
     $(function(){
-       // 「捕まえる」失敗時の画面表示
+      // 「捕まえる」失敗時の画面表示
       const originalContent = $('#wrapper').html();
+      const $wrapper = $('#wrapper');
       let pokemonName = '';
       let pokemonImage = '';
       let monsterBall = '';
-      const $wrapper = $('#wrapper');
+      let pokemonNumber = '';
+      
+      const getRandomNumber = () => Math.floor(Math.random() * 150) + 1;
+      const isSuccess = () => Math.random() < 0.5;
 
       //get monsterBall image
       $.ajax({
@@ -31,20 +35,21 @@
         console.log(res);
         monsterBall = res.sprites.default;
       });
-
+      
       $('#wrapper').on('click', '#pokemon_search', function(){
+        pokemonNumber = getRandomNumber();
+        pokemonImage = '';
         $.ajax({
-          url: 'https://pokeapi.co/api/v2/pokemon-species/1',
+          url: `https://pokeapi.co/api/v2/pokemon-species/${pokemonNumber}`,
           method: 'GET'
         }).done(function(res) {
           pokemonName = res.names[0].name;
-          $wrapper.html(encountHtml);
           $.ajax({
-            url: 'https://pokeapi.co/api/v2/pokemon/1',
+            url: `https://pokeapi.co/api/v2/pokemon/${pokemonNumber}`,
             method: 'GET'
           }).done(function(res) {
             pokemonImage = res.sprites.front_default
-            $wrapper.html(encountHtml);
+            $wrapper.html(encountHtml(pokemonName, pokemonImage));
           });
         }).fail(function(err) {
           alert("Error while loading sprites from database");
@@ -52,30 +57,32 @@
         
       });
       $('#wrapper').on('click', '#catch', function() {
-        $wrapper.html(doneHtml);
+        isSuccess()? $wrapper.html(doneHtml): $wrapper.html(failHtml);
       });
       $('#wrapper').on('click', '[data-js="reset"]', function() {
         $wrapper.html(originalContent);
       });
 
+
+
       let failHtml =
       `
         <p class="text">逃げられてしまった...</p>
         <button class="btn mt" data-js="reset">戻る</button>
-      `
+      `;
 
-      // 「ポケモンを探す」後の画面表示
-      const  encountHtml = () =>
-      `
-        <p class="name">${pokemonName}</p>
+        // 「ポケモンを探す」後の画面表示
+        const  encountHtml = (name, imageUrl) =>
+        `
+        <p class="name">${name}</p>
         <div>
-          <img class="img" src="${pokemonImage}" alt="">
+          <img class="img" src="${imageUrl}" alt="">
         </div>
         <div>
           <button class="btn" id="catch">捕まえる</button>
           <button class="btn" data-js="reset">逃げる</button>
         </div>
-      `
+      `;
 
       // 「捕まえる」成功時の画面表示
       const doneHtml = () => 
@@ -85,7 +92,7 @@
           <img class="img" src="${monsterBall}" alt="">
         </div>
         <button class="btn" data-js="reset">戻る</button>
-      `
+      `;
     });
   </script>
 </body>
