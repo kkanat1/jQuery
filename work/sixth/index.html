@@ -17,11 +17,23 @@
   <script>
     $(function(){
        // 「捕まえる」失敗時の画面表示
-      
+      const originalContent = $('#wrapper').html();
       let pokemonName = 'test pokemon name';
-      $('#pokemon_search').click(function(){
-        $('#wrapper').html(encountHtml);
+      const $wrapper = $('#wrapper');
+
+      $('#wrapper').on('click', '#pokemon_search', function(){
+        $wrapper.html(encountHtml);
       });
+      $('#wrapper').on('click', '#catch', function() {
+        $wrapper.html(doneHtml);
+      });
+      $('#wrapper').on('click', '#catch', function() {
+        $wrapper.html(doneHtml);
+      });
+      $('#wrapper').on('click', '[data-js="reset"]', function() {
+        $wrapper.html(originalContent);
+      });
+
 
       $.ajax({
         // url: 'https://pokeapi.co/api/v2/pokemon/1', //can get image 
