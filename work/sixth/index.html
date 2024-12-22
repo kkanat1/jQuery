@@ -15,7 +15,96 @@
   </div>
   <script src="../../common/js/jquery.js"></script>
   <script>
-    // 回答はここに書いてね
+    $(function(){
+      // 「捕まえる」失敗時の画面表示
+      const originalContent = $('#wrapper').html();
+      const $wrapper = $('#wrapper');
+      let pokemonName = '';
+      let pokemonImage = '';
+      let monsterBall = '';
+      let pokemonNumber = '';
+      
+      const getRandomNumber = () => Math.floor(Math.random() * 150) + 1;
+      const isSuccess = () => Math.random() < 0.5;
+
+      const loadMonsterBall = function() {
+        $.ajax({
+        url: 'https://pokeapi.co/api/v2/item/4',
+        method: 'GET'
+        }).done(function(res) {
+          monsterBall = res.sprites.default;
+        }).fail(function(err) {
+          console.log("Error while loading sprites from database");
+        });
+      };
+      const loadPokemonName = (pokemonNumber) => {
+        return $.ajax({
+          url: `https://pokeapi.co/api/v2/pokemon-species/${pokemonNumber}`,
+          method: 'GET'
+        }).fail(function(err) {
+          console.log("Error while loading sprites from database");
+        });
+      };
+      const loadPokemonImages = (pokemonNumber) => {
+        return $.ajax({
+          url: `https://pokeapi.co/api/v2/pokemon/${pokemonNumber}`,
+          method: 'GET'
+        }).fail(function(err) {
+          console.log("Error while loading sprites from database");
+        });;
+      };
+
+      loadMonsterBall();
+
+      $('#wrapper').on('click', '#pokemon_search', function(){
+        pokemonNumber = getRandomNumber();
+        pokemonImage = '';
+        loadPokemonName(pokemonNumber).done(function(res) {
+          pokemonName = res.names[0].name;
+          loadPokemonImages(pokemonNumber).done(function(res) {
+            pokemonImage = res.sprites.front_default
+            $wrapper.html(encountHtml(pokemonName, pokemonImage));
+          });
+        });
+        
+      });
+      $('#wrapper').on('click', '#catch', function() {
+        isSuccess()? $wrapper.html(doneHtml): $wrapper.html(failHtml);
+      });
+      $('#wrapper').on('click', '[data-js="reset"]', function() {
+        $wrapper.html(originalContent);
+      });
+
+
+      let failHtml =
+      `
+        <p class="text">逃げられてしまった...</p>
+        <button class="btn mt" data-js="reset">戻る</button>
+      `;
+
+        // 「ポケモンを探す」後の画面表示
+        const  encountHtml = (name, imageUrl) =>
+        `
+        <p class="name">${name}</p>
+        <div>
+          <img class="img" src="${imageUrl}" alt="">
+        </div>
+        <div>
+          <button class="btn" id="catch">捕まえる</button>
+          <button class="btn" data-js="reset">逃げる</button>
+        </div>
+      `;
+
+      // 「捕まえる」成功時の画面表示
+      const doneHtml = () => 
+      `
+        <p class="name">ゲットしました</p>
+        <div>
+          <img class="img" src="${monsterBall}" alt="">
+        </div>
+        <button class="btn" data-js="reset">戻る</button>
+      `;
+    });
   </script>
 </body>
 </html>
