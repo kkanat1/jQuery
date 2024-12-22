@@ -27,32 +27,44 @@
       const getRandomNumber = () => Math.floor(Math.random() * 150) + 1;
       const isSuccess = () => Math.random() < 0.5;
 
-      //get monsterBall image
-      $.ajax({
+      const loadMonsterBall = function() {
+        $.ajax({
         url: 'https://pokeapi.co/api/v2/item/4',
         method: 'GET'
       }).done(function(res) {
-        console.log(res);
         monsterBall = res.sprites.default;
+      }).fail(function(err) {
+        console.log("Error while loading sprites from database");
       });
+      };
+      const loadPokemonName = (pokemonNumber) => {
+        return $.ajax({
+          url: `https://pokeapi.co/api/v2/pokemon-species/${pokemonNumber}`,
+          method: 'GET'
+        }).fail(function(err) {
+          console.log("Error while loading sprites from database");
+        });
+      };
+      const loadPokemonImages = (pokemonNumber) => {
+        return $.ajax({
+          url: `https://pokeapi.co/api/v2/pokemon/${pokemonNumber}`,
+          method: 'GET'
+        }).fail(function(err) {
+          console.log("Error while loading sprites from database");
+        });;
+      };
+
+      loadMonsterBall();
       
       $('#wrapper').on('click', '#pokemon_search', function(){
         pokemonNumber = getRandomNumber();
         pokemonImage = '';
-        $.ajax({
-          url: `https://pokeapi.co/api/v2/pokemon-species/${pokemonNumber}`,
-          method: 'GET'
-        }).done(function(res) {
+        loadPokemonName(pokemonNumber).done(function(res) {
           pokemonName = res.names[0].name;
-          $.ajax({
-            url: `https://pokeapi.co/api/v2/pokemon/${pokemonNumber}`,
-            method: 'GET'
-          }).done(function(res) {
+          loadPokemonImages(pokemonNumber).done(function(res) {
             pokemonImage = res.sprites.front_default
             $wrapper.html(encountHtml(pokemonName, pokemonImage));
           });
-        }).fail(function(err) {
-          alert("Error while loading sprites from database");
         });
         
       });
@@ -62,7 +74,6 @@
       $('#wrapper').on('click', '[data-js="reset"]', function() {
         $wrapper.html(originalContent);
       });
-
 
 
       let failHtml =
