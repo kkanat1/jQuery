@@ -18,33 +18,44 @@
     $(function(){
        // 「捕まえる」失敗時の画面表示
       const originalContent = $('#wrapper').html();
-      let pokemonName = 'test pokemon name';
+      let pokemonName = '';
+      let pokemonImage = '';
+      let monsterBall = '';
       const $wrapper = $('#wrapper');
 
-      $('#wrapper').on('click', '#pokemon_search', function(){
-        $wrapper.html(encountHtml);
+      //get monsterBall image
+      $.ajax({
+        url: 'https://pokeapi.co/api/v2/item/4',
+        method: 'GET'
+      }).done(function(res) {
+        console.log(res);
+        monsterBall = res.sprites.default;
       });
-      $('#wrapper').on('click', '#catch', function() {
-        $wrapper.html(doneHtml);
+
+      $('#wrapper').on('click', '#pokemon_search', function(){
+        $.ajax({
+          url: 'https://pokeapi.co/api/v2/pokemon-species/1',
+          method: 'GET'
+        }).done(function(res) {
+          pokemonName = res.names[0].name;
+          $wrapper.html(encountHtml);
+          $.ajax({
+            url: 'https://pokeapi.co/api/v2/pokemon/1',
+            method: 'GET'
+          }).done(function(res) {
+            pokemonImage = res.sprites.front_default
+            $wrapper.html(encountHtml);
+          });
+        }).fail(function(err) {
+          alert("Error while loading sprites from database");
+        });
+        
       });
       $('#wrapper').on('click', '#catch', function() {
         $wrapper.html(doneHtml);
       });
       $('#wrapper').on('click', '[data-js="reset"]', function() {
         $wrapper.html(originalContent);
-      });
-
-
-      $.ajax({
-        // url: 'https://pokeapi.co/api/v2/pokemon/1', //can get image 
-        url: 'https://pokeapi.co/api/v2/pokemon-species/1', //can get name 
-        method: 'GET'
-      }).done(function(res) {
-        console.log(res);
-        console.log(res.names[0].name);
-        // console.log(res.species.url);//ポケモンの詳細
-        // console.log(res.sprites.front_default); // 取得のポケモンのイメージ取得
-      }).fail(function(err) {
       });
 
       let failHtml =
@@ -54,11 +65,11 @@
       `
 
       // 「ポケモンを探す」後の画面表示
-      let encountHtml =
+      const  encountHtml = () =>
       `
         <p class="name">${pokemonName}</p>
         <div>
-          <img class="img" src="" alt="">
+          <img class="img" src="${pokemonImage}" alt="">
         </div>
         <div>
           <button class="btn" id="catch">捕まえる</button>
@@ -67,18 +78,15 @@
       `
 
       // 「捕まえる」成功時の画面表示
-      let doneHtml =
+      const doneHtml = () => 
       `
         <p class="name">ゲットしました</p>
         <div>
-          <img class="img" src="" alt="">
+          <img class="img" src="${monsterBall}" alt="">
         </div>
         <button class="btn" data-js="reset">戻る</button>
       `
-
     });
-    
-    
   </script>
 </body>
 </html>
