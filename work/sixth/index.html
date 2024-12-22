@@ -31,11 +31,11 @@
         $.ajax({
         url: 'https://pokeapi.co/api/v2/item/4',
         method: 'GET'
-      }).done(function(res) {
-        monsterBall = res.sprites.default;
-      }).fail(function(err) {
-        console.log("Error while loading sprites from database");
-      });
+        }).done(function(res) {
+          monsterBall = res.sprites.default;
+        }).fail(function(err) {
+          console.log("Error while loading sprites from database");
+        });
       };
       const loadPokemonName = (pokemonNumber) => {
         return $.ajax({
@@ -55,7 +55,7 @@
       };
 
       loadMonsterBall();
-      
+
       $('#wrapper').on('click', '#pokemon_search', function(){
         pokemonNumber = getRandomNumber();
         pokemonImage = '';
